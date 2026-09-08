@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://github.com/prajwal032004/qr-optical-beam/stargazers"><img src="https://img.shields.io/github/stars/prajwal032004/qr-optical-beam?style=social" alt="GitHub Stars" /></a>
   <a href="https://github.com/prajwal032004/qr-optical-beam/network/members"><img src="https://img.shields.io/github/forks/prajwal032004/qr-optical-beam?style=social" alt="GitHub Forks" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT" /></a>
   <a href="https://kotlinlang.org/"><img src="https://img.shields.io/badge/Kotlin-2.0+-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin" /></a>
   <a href="https://developer.android.com/jetpack/compose"><img src="https://img.shields.io/badge/UI-Jetpack%20Compose%20M3-4285F4?logo=jetpackcompose&logoColor=white" alt="Compose" /></a>
 </p>
@@ -260,7 +260,7 @@ If you find **AirQR Beam** useful, intriguing, or innovative, please consider **
 
 ## 📄 License
 
-Distributed under the **Apache License 2.0**. See [`LICENSE`](LICENSE) for more information.
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more information.
 
 <p align="center">
   Made with 💙 by <a href="https://github.com/prajwal032004"><b>Prajwal</b></a>
