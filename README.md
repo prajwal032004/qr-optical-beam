@@ -189,6 +189,7 @@ Prerequisites: Android Studio / JDK 17+ and Android SDK.
 ```bash
 git clone https://github.com/prajwal032004/qr-optical-beam.git
 cd qr-optical-beam
+```
 
 ---
 
