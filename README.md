@@ -187,30 +187,8 @@ AirQR Beam includes a standalone, zero-dependency HTML5/Canvas/WebRTC companion 
 Prerequisites: Android Studio / JDK 17+ and Android SDK.
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/prajwal032004/qr-optical-beam.git
 cd qr-optical-beam
-
-# 2. Build the debug APK
-./gradlew assembleDebug
-
-```
-
-### Option 3: Launching the Web Companion
-```bash
-# You can open index.html directly in any browser:
-# On Windows:
-start index.html
-
-# On macOS:
-open index.html
-
-# On Linux:
-xdg-open index.html
-
-# Or serve locally if you prefer:
-npx serve .
-```
 
 ---
 
