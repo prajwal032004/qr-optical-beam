@@ -23,6 +23,15 @@
   <b>Zero Wi-Fi • Zero Bluetooth • Zero Cellular • Zero NFC • Zero Cloud Servers • 100% RF-Silent</b>
 </p>
 
+<p align="center">
+  <a href="https://github.com/prajwal032004/qr-optical-beam/releases/download/v1.0.0/app-debug.apk">
+    <img src="https://img.shields.io/badge/📲%20Download%20APK-AirQR%20Beam%20v1.0.0-00E5FF?style=for-the-badge&logo=android&logoColor=black" alt="Download APK" />
+  </a>
+  <a href="https://github.com/prajwal032004/qr-optical-beam/releases/tag/v1.0.0">
+    <img src="https://img.shields.io/badge/📦%20GitHub-Release%20Notes-141B2D?style=for-the-badge&logo=github&logoColor=white" alt="Release Notes" />
+  </a>
+</p>
+
 ---
 
 ## 📸 Preview & User Interface
@@ -162,7 +171,14 @@ AirQR Beam includes a standalone, zero-dependency HTML5/Canvas/WebRTC companion 
 ## 🚀 Quick Start & Installation
 
 ### Option 1: Direct APK Installation (Recommended)
-1. Download the latest `AirQR-Beam.apk` from the [Releases](https://github.com/prajwal032004/qr-optical-beam/releases) section.
+
+<p align="left">
+  <a href="https://github.com/prajwal032004/qr-optical-beam/releases/download/v1.0.0/app-debug.apk">
+    <img src="https://img.shields.io/badge/⚡%20Direct%20Download-app--debug.apk%20(v1.0.0)-00E5FF?style=for-the-badge&logo=android&logoColor=black" alt="Direct Download APK" />
+  </a>
+</p>
+
+1. Click the button above or download [**`app-debug.apk`**](https://github.com/prajwal032004/qr-optical-beam/releases/download/v1.0.0/app-debug.apk) directly.
 2. Open the APK on your Android device (Android 7.0 / API 24+ supported).
 3. If prompted, allow installation from unknown sources.
 4. Launch **AirQR Beam** and you're ready to beam offline!
