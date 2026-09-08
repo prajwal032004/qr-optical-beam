@@ -174,7 +174,7 @@ AirQR Beam includes a standalone, zero-dependency HTML5/Canvas/WebRTC companion 
 
 <p align="left">
   <a href="https://github.com/prajwal032004/qr-optical-beam/releases/download/v1.0.0/app-debug.apk">
-    <img src="https://img.shields.io/badge/⚡%20Direct%20Download-app--debug.apk%20(v1.0.0)-00E5FF?style=for-the-badge&logo=android&logoColor=black" alt="Direct Download APK" />
+    <img src="https://img.shields.io/badge/⚡%20Direct%20Download-app--debug.apk%20(v1.0.0)-00E5FF?style=for-the-badge&logo=android&logoColor=black" alt="Download APK" />
   </a>
 </p>
 
