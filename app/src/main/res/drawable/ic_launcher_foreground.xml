@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- QR Corner Finder 1: Top-Left (x: 28-44, y: 28-44) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M28,28h16v16h-16z M32,32v8h8v-8z" />
+    <path
+        android:fillColor="#64FFDA"
+        android:pathData="M34,34h4v4h-4z" />
+
+    <!-- QR Corner Finder 2: Top-Right (x: 64-80, y: 28-44) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M64,28h16v16h-16z M68,32v8h8v-8z" />
+    <path
+        android:fillColor="#64FFDA"
+        android:pathData="M70,34h4v4h-4z" />
+
+    <!-- QR Corner Finder 3: Bottom-Left (x: 28-44, y: 64-80) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M28,64h16v16h-16z M32,68v8h8v-8z" />
+    <path
+        android:fillColor="#64FFDA"
+        android:pathData="M34,70h4v4h-4z" />
+
+    <!-- Center Radiant Optical Photon Diamond (x: 42-66, y: 42-66) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M54,39L69,54L54,69L39,54Z" />
+    <path
+        android:fillColor="#08101E"
+        android:pathData="M54,43L65,54L54,65L43,54Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,48L60,54L54,60L48,54Z" />
+
+    <!-- Optical Light Beam Flare Rays (Crossing Center) -->
+    <path
+        android:fillColor="#80E5FF"
+        android:pathData="M53,24h2v12h-2z" />
+    <path
+        android:fillColor="#80E5FF"
+        android:pathData="M53,72h2v12h-2z" />
+    <path
+        android:fillColor="#80E5FF"
+        android:pathData="M24,53h12v2h-12z" />
+    <path
+        android:fillColor="#80E5FF"
+        android:pathData="M72,53h12v2h-12z" />
+
+    <!-- Bottom-Right Matrix Cells (High-Tech QR Data Grid) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M65,65h4v4h-4z M73,65h4v4h-4z M65,73h4v4h-4z M73,73h4v4h-4z M73,69h4v4h-4z M69,73h4v4h-4z" />
+</vector>

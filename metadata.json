@@ -1,0 +1,6 @@
+{
+  "name": "QR Optical Beam",
+  "description": "Offline optical file transfer using animated QR code streams between devices with zero network connectivity.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

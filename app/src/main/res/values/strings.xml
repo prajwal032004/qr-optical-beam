@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">QR Optical Beam</string>
+    <string name="nav_transmit">Transmit</string>
+    <string name="nav_receive">Receive</string>
+    <string name="nav_history">History</string>
+    <string name="nav_guide">Guide</string>
+    <string name="title_transmit">Optical File Beam</string>
+    <string name="title_receive">Optical Scanner</string>
+    <string name="title_history">Transfer History</string>
+    <string name="select_file">Select File</string>
+    <string name="change_file">Change File</string>
+    <string name="start_transmission">Start Beam Stream</string>
+    <string name="pause_transmission">Pause</string>
+    <string name="resume_transmission">Resume</string>
+    <string name="stop_transmission">Stop Stream</string>
+    <string name="camera_permission_required">Camera access is required to scan QR code streams.</string>
+    <string name="grant_permission">Grant Permission</string>
+</resources>

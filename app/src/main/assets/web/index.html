@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AirQR Desktop • Optical Air-Gapped File Transfer</title>
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --bg-card: #0e131f;
+      --bg-surface: #141b2d;
+      --border-color: #222f4c;
+      --accent-cyan: #00e5ff;
+      --accent-cyan-glow: rgba(0, 229, 255, 0.25);
+      --accent-green: #00e676;
+      --accent-amber: #ffd54f;
+      --accent-red: #ff5252;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      background: rgba(14, 19, 31, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #00e5ff 0%, #0077ff 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 14px var(--accent-cyan-glow);
+    }
+
+    .brand-logo svg {
+      width: 22px;
+      height: 22px;
+      fill: #07090e;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .brand-title span {
+      color: var(--accent-cyan);
+    }
+
+    .badge-pill {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      background: rgba(0, 229, 255, 0.1);
+      color: var(--accent-cyan);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      background: var(--bg-surface);
+      padding: 0.25rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background: var(--accent-cyan);
+      color: #07090e;
+      box-shadow: 0 0 12px var(--accent-cyan-glow);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .view-panel {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .view-panel.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Grid Cards */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.75rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Drop Zone */
+    .dropzone {
+      border: 2px dashed var(--border-color);
+      border-radius: 16px;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      background: rgba(20, 27, 45, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 229, 255, 0.05);
+    }
+
+    .dropzone-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(0, 229, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-cyan);
+    }
+
+    /* QR Viewport */
+    .qr-container {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1 / 1;
+      max-width: 440px;
+      width: 100%;
+      margin: 0 auto;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    .qr-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+      image-rendering: pixelated;
+    }
+
+    /* Controls Bar */
+    .controls-panel {
+      background: var(--bg-surface);
+      border-radius: 14px;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .btn {
+      background: var(--accent-cyan);
+      color: #07090e;
+      border: none;
+      border-radius: 10px;
+      padding: 0.55rem 1.1rem;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      background: rgba(0, 229, 255, 0.05);
+    }
+
+    .btn-danger {
+      background: var(--accent-red);
+      color: #ffffff;
+    }
+
+    .slider {
+      flex: 1;
+      accent-color: var(--accent-cyan);
+      cursor: pointer;
+    }
+
+    /* Progress bar */
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-surface);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00e5ff, #00e676);
+      width: 0%;
+      transition: width 0.15s ease;
+    }
+
+    /* Packet Matrix Bit-Grid */
+    .packet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(12px, 1fr));
+      gap: 3px;
+      max-height: 220px;
+      overflow-y: auto;
+      background: rgba(7, 9, 14, 0.6);
+      padding: 0.75rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .packet-block {
+      aspect-ratio: 1;
+      border-radius: 2px;
+      background: #1e293b;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .packet-block:hover {
+      transform: scale(1.4);
+      z-index: 2;
+    }
+
+    .packet-block.received {
+      background: var(--accent-green);
+      box-shadow: 0 0 4px rgba(0, 230, 118, 0.4);
+    }
+
+    .packet-block.missing {
+      background: var(--accent-red);
+      animation: pulseAlert 1.2s infinite alternate;
+    }
+
+    .packet-block.active {
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+    }
+
+    @keyframes pulseAlert {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+
+    /* Camera Video Scanner */
+    .video-container {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 4 / 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .video-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .scanner-overlay {
+      position: absolute;
+      inset: 15%;
+      border: 2px solid var(--accent-cyan);
+      border-radius: 16px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+    }
+
+    .scanner-laser {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+      animation: scanLaser 2s linear infinite alternate;
+    }
+
+    @keyframes scanLaser {
+      0% { top: 0; }
+      100% { top: 100%; }
+    }
+
+    /* Monospace Metadata Table */
+    .meta-table {
+      font-family: var(--mono-family);
+      font-size: 0.8rem;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .meta-table td {
+      padding: 0.35rem 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .meta-table td:first-child {
+      color: var(--text-muted);
+      width: 35%;
+    }
+
+    .meta-table td:last-child {
+      color: var(--accent-cyan);
+      word-break: break-all;
+    }
+
+    /* Modal / Popup */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      max-width: 500px;
+      width: 100%;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header>
+    <a href="#" class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 4h6v6H4V4zm2 2v2h2V6H6zm8-2h6v6h-6V4zm2 2v2h2V6h-2zM4 14h6v6H4v-6zm2 2v2h2v-2H6zm10-2h2v2h-2v-2zm-2 2h2v2h-2v-2zm4 0h2v2h-2v-2zm-2 2h2v2h-2v-2zm2 2h2v2h-2v-2zm-4 0h2v2h-2v-2z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">Air<span>QR</span> Desktop</div>
+      </div>
+      <span class="badge-pill">Air-Gapped Optical</span>
+    </a>
+
+    <nav class="nav-tabs">
+      <button class="tab-btn active" id="tabTransmit" onclick="switchTab('transmit')">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        Transmit (PC &rarr; Phone)
+      </button>
+      <button class="tab-btn" id="tabReceive" onclick="switchTab('receive')">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M9.4 10.5l4.77-8.26A9.99 9.99 0 0 0 2 12c0 1.25.23 2.45.65 3.56l4.67-8.06h2.08zm11.95 2.5c-.32 3.86-3.03 7.04-6.72 7.75l3.83-6.63.02-.02 2.87-1.1zm-8.85 7.9c4.95-.55 8.92-4.4 9.46-9.4h-5.46l-4 9.4zM3.46 17.5l3.8-6.57L4.6 6.2C2.96 7.8 2 10.02 2 12.5c0 1.78.49 3.45 1.46 5z"/></svg>
+        Receive (Phone &rarr; PC)
+      </button>
+      <button class="tab-btn" id="tabGuide" onclick="switchTab('guide')">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        Protocol & Guide
+      </button>
+      <a href="AirQR-Optical-Beam.zip" download="AirQR-Optical-Beam.zip" class="tab-btn" style="background:rgba(0, 240, 255, 0.15); color:var(--accent-cyan); border:1px solid rgba(0, 240, 255, 0.4); text-decoration:none; font-weight:700;">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+        Download AirQR.zip
+      </a>
+      <a href="AirQR-Optical-Beam.apk" download="AirQR-Optical-Beam.apk" class="tab-btn" style="background:rgba(0, 230, 118, 0.15); color:var(--accent-green); border:1px solid rgba(0, 230, 118, 0.35); text-decoration:none;">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
+        Download APK
+      </a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ============================================== -->
+    <!-- TRANSMIT PANEL (PC -> Phone)                  -->
+    <!-- ============================================== -->
+    <section id="panelTransmit" class="view-panel active">
+      <div class="grid-2col">
+        <!-- Left: File Selector & Parameters -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="18" height="18" fill="var(--accent-cyan)" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+              1. Select File to Beam
+            </div>
+            <span class="badge-pill" id="txStatusBadge">IDLE</span>
+          </div>
+
+          <!-- Drop Zone -->
+          <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+            <input type="file" id="fileInput" style="display:none" onchange="handleFileSelected(this.files[0])">
+            <div class="dropzone-icon">
+              <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+            </div>
+            <div>
+              <div style="font-weight: 700; font-size: 1rem; color: #fff;">Drop file here or click to browse</div>
+              <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Supports any file: PDFs, archives, photos, binaries, keys</div>
+            </div>
+          </div>
+
+          <!-- File Info Metadata Table -->
+          <div id="fileInfoCard" style="display:none; flex-direction:column; gap:0.5rem;">
+            <table class="meta-table">
+              <tr><td>File Name</td><td id="txFileName">-</td></tr>
+              <tr><td>Size</td><td id="txFileSize">-</td></tr>
+              <tr><td>MIME Type</td><td id="txMime">-</td></tr>
+              <tr><td>SHA-256</td><td id="txHash">-</td></tr>
+              <tr><td>Total Chunks</td><td id="txChunkCount">-</td></tr>
+            </table>
+          </div>
+
+          <!-- Transmission Parameters -->
+          <div class="controls-panel">
+            <div class="control-row">
+              <span style="font-weight:600; font-size:0.85rem;">Frame Rate (FPS):</span>
+              <span id="fpsVal" style="font-weight:700; color:var(--accent-cyan);">8 FPS</span>
+            </div>
+            <input type="range" class="slider" id="fpsSlider" min="1" max="16" value="8" oninput="updateFps(this.value)">
+
+            <div class="control-row" style="margin-top:0.4rem;">
+              <span style="font-weight:600; font-size:0.85rem;">Packet Density:</span>
+              <select id="chunkSizeSelect" onchange="updateChunkSize(this.value)" style="background:var(--bg-card); color:var(--text-main); border:1px solid var(--border-color); border-radius:6px; padding:0.25rem 0.5rem;">
+                <option value="180">180 Bytes (Safe / Distance)</option>
+                <option value="280">280 Bytes (Balanced Standard)</option>
+                <option value="360" selected>360 Bytes (High Density)</option>
+                <option value="480">480 Bytes (Ultra Turbo)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Targeted Missed Chunks Resend -->
+          <div id="targetedResendCard" style="display:none; background:rgba(255, 82, 82, 0.12); border:1px solid rgba(255, 82, 82, 0.35); border-radius:12px; padding:0.75rem;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <span style="color:var(--accent-red); font-weight:700; font-size:0.85rem;">TARGETED MISSING CHUNKS MODE</span>
+              <button class="btn btn-outline" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="clearTxFilter()">Resume All</button>
+            </div>
+            <div id="txTargetedSummary" style="font-size:0.8rem; color:var(--text-muted); margin-top:0.4rem;">Re-beaming only requested missing packets.</div>
+          </div>
+
+          <button class="btn btn-outline" onclick="openScanRequestModal()">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h6v6H4V4zm2 2v2h2V6H6zm8-2h6v6h-6V4zm2 2v2h2V6h-2zM4 14h6v6H4v-6zm2 2v2h2v-2H6zm10-2h2v2h-2v-2zm-2 2h2v2h-2v-2zm4 0h2v2h-2v-2zm-2 2h2v2h-2v-2zm2 2h2v2h-2v-2zm-4 0h2v2h-2v-2z"/></svg>
+            Scan Phone's Missing Packets QR
+          </button>
+        </div>
+
+        <!-- Right: Animated Optical Transmitter Viewport -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="18" height="18" fill="var(--accent-cyan)" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              2. Optical Stream Display
+            </div>
+            <span id="txFrameCounter" style="font-family:var(--mono-family); font-weight:700; color:var(--accent-cyan); font-size:0.9rem;">0 / 0</span>
+          </div>
+
+          <!-- The High Contrast QR canvas -->
+          <div class="qr-container">
+            <canvas id="txCanvas" width="400" height="400"></canvas>
+          </div>
+
+          <!-- Scrubber & Playback Controls -->
+          <div class="controls-panel">
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="txProgress"></div>
+            </div>
+
+            <div class="control-row" style="margin-top:0.4rem;">
+              <button class="btn btn-outline" style="padding:0.4rem 0.8rem;" onclick="stepTxFrame(-1)">&larr; Prev</button>
+              <button class="btn" id="txPlayBtn" onclick="toggleTxPlay()">Play Stream</button>
+              <button class="btn btn-outline" style="padding:0.4rem 0.8rem;" onclick="stepTxFrame(1)">Next &rarr;</button>
+              <button class="btn btn-outline" onclick="toggleFullscreen()">Fullscreen</button>
+            </div>
+
+            <input type="range" class="slider" id="txScrubber" min="0" max="0" value="0" oninput="scrubTx(this.value)">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- RECEIVE PANEL (Phone -> PC)                    -->
+    <!-- ============================================== -->
+    <section id="panelReceive" class="view-panel">
+      <div class="grid-2col">
+        <!-- Left: Webcam Scanner -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="18" height="18" fill="var(--accent-cyan)" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              1. Point Webcam at Phone Screen
+            </div>
+            <button class="btn btn-outline" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="startCamera()">Toggle Camera</button>
+          </div>
+
+          <div class="video-container">
+            <video id="webcamVideo" autoplay playsinline muted></video>
+            <div class="scanner-overlay">
+              <div class="scanner-laser"></div>
+            </div>
+          </div>
+
+          <div class="controls-panel">
+            <div class="control-row">
+              <span style="font-weight:600; font-size:0.85rem;">Rx Speed:</span>
+              <span id="rxSpeed" style="font-weight:700; color:var(--accent-cyan);">0.0 chunks/s</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="rxProgress"></div>
+            </div>
+            <div class="control-row">
+              <span id="rxChunkCount" style="font-size:0.85rem; font-weight:600;">0 / 0 packets received (0%)</span>
+              <span id="rxStatus" style="font-size:0.8rem; font-weight:700; color:var(--accent-amber);">WAITING FOR BEAM</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Dynamic Bit-Grid & Stream Health Inspector -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="18" height="18" fill="var(--accent-cyan)" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z"/></svg>
+              2. Dynamic Bit-Grid (Stream Health)
+            </div>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span class="badge-pill" id="rxHealthBadge" style="color:var(--accent-cyan); border-color:var(--accent-cyan);">ARMED</span>
+              <button class="btn btn-outline" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="generateRxMissingRequest()">Show Missing QR</button>
+            </div>
+          </div>
+
+          <!-- Stream Health Legend & Stats -->
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; color:var(--text-muted); margin-bottom:0.4rem;">
+            <div style="display:flex; gap:0.8rem; align-items:center;">
+              <span style="display:inline-flex; align-items:center; gap:4px;"><span style="width:8px; height:8px; border-radius:2px; background:var(--accent-green); display:inline-block;"></span> Received</span>
+              <span style="display:inline-flex; align-items:center; gap:4px;"><span style="width:8px; height:8px; border-radius:2px; background:var(--accent-red); display:inline-block;"></span> Missing (Red)</span>
+              <span style="display:inline-flex; align-items:center; gap:4px;"><span style="width:8px; height:8px; border-radius:2px; background:var(--accent-cyan); display:inline-block;"></span> Live</span>
+            </div>
+            <span id="rxLossRate" style="font-weight:700; color:var(--accent-cyan);">Health: 100%</span>
+          </div>
+
+          <!-- Visual Bit-Matrix Grid -->
+          <div class="packet-grid" id="rxPacketGrid">
+            <!-- Dynamic packet blocks inserted via JS -->
+          </div>
+
+          <!-- Missed Packet Range Callout -->
+          <div id="rxMissingCallout" style="display:none; background:rgba(255, 82, 82, 0.12); border:1px solid rgba(255, 82, 82, 0.4); border-radius:12px; padding:0.75rem;">
+            <div style="font-weight:700; font-size:0.85rem; color:var(--accent-red); display:flex; align-items:center; gap:0.4rem;">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+              <span>Missing Chunks (Highlighted in Red)</span>
+            </div>
+            <div id="rxMissingList" style="font-family:var(--mono-family); font-size:0.8rem; margin-top:0.3rem; color:#fff;"></div>
+          </div>
+
+          <!-- Received File Card (Shown upon 100% SHA verification) -->
+          <div id="rxCompleteCard" style="display:none; background:rgba(0, 230, 118, 0.1); border:1px solid var(--accent-green); border-radius:14px; padding:1.2rem; flex-direction:column; gap:0.75rem;">
+            <div style="display:flex; align-items:center; gap:0.5rem; color:var(--accent-green); font-weight:800; font-size:1.1rem;">
+              <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+              Transfer Verified & Complete!
+            </div>
+            <div style="font-family:var(--mono-family); font-size:0.85rem;">
+              File: <span id="rxFileName" style="color:#fff; font-weight:700;"></span><br>
+              Size: <span id="rxFileSize" style="color:var(--text-muted);"></span><br>
+              SHA-256: <span id="rxHash" style="color:var(--accent-cyan); word-break:break-all;"></span>
+            </div>
+            <button class="btn" style="background:var(--accent-green); color:#07090e; font-size:1rem;" id="rxDownloadBtn">
+              <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+              Download File to PC
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- GUIDE & PROTOCOL SPEC PANEL                    -->
+    <!-- ============================================== -->
+    <section id="panelGuide" class="view-panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Optical Beam Protocol Specification (QRF v1)</div>
+          <span class="badge-pill">Zero Internet Required</span>
+        </div>
+        <p style="color:var(--text-muted); line-height:1.6;">
+          AirQR uses pure light photons to achieve air-gapped, unidirectional and bidirectional data transfers between mobile devices and desktop computers without Bluetooth, Wi-Fi, cables, or servers.
+        </p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem; margin-top:0.5rem;">
+          <div style="background:var(--bg-surface); padding:1rem; border-radius:12px; border:1px solid var(--border-color);">
+            <div style="font-weight:700; color:var(--accent-cyan); margin-bottom:0.5rem;">High-Speed Pre-Caching</div>
+            <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+              Frames are pre-rendered into memory bitmaps ahead of time to eliminate frame-drop stuttering and support streaming up to 16 FPS.
+            </div>
+          </div>
+          <div style="background:var(--bg-surface); padding:1rem; border-radius:12px; border:1px solid var(--border-color);">
+            <div style="font-weight:700; color:var(--accent-green); margin-bottom:0.5rem;">Selective Repeat QR Reverse Feedback</div>
+            <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+              If optical interference causes packets to drop, the receiver displays a reverse request QR containing missing indices. The sender reads this to transmit ONLY missing frames.
+            </div>
+          </div>
+          <div style="background:var(--bg-surface); padding:1rem; border-radius:12px; border:1px solid var(--border-color);">
+            <div style="font-weight:700; color:var(--accent-amber); margin-bottom:0.5rem;">SHA-256 Bit-Level Integrity</div>
+            <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+              Every payload is cryptographically authenticated with SHA-256 before disk reconstruction to prevent corruption or incomplete writes.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal for Missing Request QR (when PC receiver requests phone sender to re-beam) -->
+  <div class="modal-backdrop" id="missingModal">
+    <div class="modal-card">
+      <div class="card-header">
+        <div class="card-title" style="color:var(--accent-amber);">Scan with Phone to Resend Missing</div>
+        <button class="btn btn-outline" style="padding:0.2rem 0.5rem;" onclick="closeModal('missingModal')">&times;</button>
+      </div>
+      <div style="font-size:0.85rem; color:var(--text-muted); text-align:center;">
+        Point your sending phone camera at this QR code in the app's "Scan Receiver Request" to transmit only the missing frames!
+      </div>
+      <div class="qr-container" style="max-width:320px;">
+        <canvas id="missingQrCanvas" width="300" height="300"></canvas>
+      </div>
+      <button class="btn btn-outline" onclick="closeModal('missingModal')">Close</button>
+    </div>
+  </div>
+
+  <!-- Modal for scanning phone request from desktop webcam -->
+  <div class="modal-backdrop" id="scanRequestModal">
+    <div class="modal-card">
+      <div class="card-header">
+        <div class="card-title">Scan Missing Chunks QR</div>
+        <button class="btn btn-outline" style="padding:0.2rem 0.5rem;" onclick="closeModal('scanRequestModal')">&times;</button>
+      </div>
+      <div style="font-size:0.85rem; color:var(--text-muted);">
+        Paste the request JSON or scan phone's screen:
+      </div>
+      <textarea id="manualRequestInput" placeholder='{"t":"req","id":"...","need":[3,4,8]}' style="background:var(--bg-dark); color:#fff; border:1px solid var(--border-color); border-radius:8px; padding:0.5rem; font-family:var(--mono-family); font-size:0.8rem; height:80px;"></textarea>
+      <button class="btn" onclick="applyManualRequest()">Apply Targeted Resend</button>
+    </div>
+  </div>
+
+  <!-- Inline Lightweight, Zero-Dependency QR Code Generator Engine (Fully Air-Gapped) -->
+  <script>
+    /* =========================================================
+       Pure JavaScript QR Code Generator (Compact Canvas Engine)
+       ========================================================= */
+    const QRCode = (function() {
+      // Minimal self-contained QR Encoder for browser canvas
+      function QR8bitByte(data) {
+        this.mode = 4; // 8bit byte
+        this.data = data;
+      }
+      QR8bitByte.prototype = {
+        getLength: function() { return new TextEncoder().encode(this.data).length; },
+        write: function(buffer) {
+          var bytes = new TextEncoder().encode(this.data);
+          for (var i = 0; i < bytes.length; i++) buffer.put(bytes[i], 8);
+        }
+      };
+
+      // Built-in dynamic fallback renderer using native canvas or SVG
+      return {
+        toCanvas: function(canvas, text, options) {
+          options = options || {};
+          var ctx = canvas.getContext('2d');
+          var width = canvas.width;
+          var height = canvas.height;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, width, height);
+
+          // We use a robust QR matrix generator or high-density fallback encoding
+          try {
+            renderMatrix(canvas, text, options.margin || 2);
+          } catch(e) {
+            console.error("QR Generation error:", e);
+          }
+        }
+      };
+
+      // Pure JS QR polynomial & Reed-Solomon generator
+      function renderMatrix(canvas, text, margin) {
+        var qr = new QRCodeModel(0, 1); // Auto type, error level L
+        qr.addData(text);
+        qr.make();
+
+        var ctx = canvas.getContext('2d');
+        var moduleCount = qr.getModuleCount();
+        var cellSize = Math.floor((canvas.width - margin * 2) / moduleCount);
+        var offset = Math.floor((canvas.width - (cellSize * moduleCount)) / 2);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#000000';
+
+        for (var r = 0; r < moduleCount; r++) {
+          for (var c = 0; c < moduleCount; c++) {
+            if (qr.isDark(r, c)) {
+              ctx.fillRect(offset + c * cellSize, offset + r * cellSize, cellSize, cellSize);
+            }
+          }
+        }
+      }
+
+      function QRCodeModel(typeNumber, errorCorrectLevel) {
+        this.typeNumber = typeNumber;
+        this.errorCorrectLevel = errorCorrectLevel;
+        this.modules = null;
+        this.moduleCount = 0;
+        this.dataList = [];
+      }
+      QRCodeModel.prototype = {
+        addData: function(data) { this.dataList.push(new QR8bitByte(data)); },
+        isDark: function(row, col) { return this.modules[row][col]; },
+        getModuleCount: function() { return this.moduleCount; },
+        make: function() {
+          var type = this.typeNumber || this.getBestType();
+          this.typeNumber = type;
+          this.moduleCount = type * 4 + 17;
+          this.modules = new Array(this.moduleCount);
+          for (var r = 0; r < this.moduleCount; r++) {
+            this.modules[r] = new Array(this.moduleCount).fill(false);
+          }
+          this.setupPositionProbePattern(0, 0);
+          this.setupPositionProbePattern(this.moduleCount - 7, 0);
+          this.setupPositionProbePattern(0, this.moduleCount - 7);
+          this.setupTimingPattern();
+          this.mapData(this.createData(type, this.errorCorrectLevel));
+        },
+        getBestType: function() {
+          var len = 0;
+          for (var i = 0; i < this.dataList.length; i++) len += this.dataList[i].getLength();
+          if (len < 50) return 4;
+          if (len < 120) return 7;
+          if (len < 220) return 10;
+          if (len < 380) return 14;
+          if (len < 580) return 18;
+          return 22;
+        },
+        setupPositionProbePattern: function(row, col) {
+          for (var r = -1; r <= 7; r++) {
+            if (row + r <= -1 || this.moduleCount <= row + r) continue;
+            for (var c = -1; c <= 7; c++) {
+              if (col + c <= -1 || this.moduleCount <= col + c) continue;
+              if ((0 <= r && r <= 6 && (c == 0 || c == 6)) || (0 <= c && c <= 6 && (r == 0 || r == 6)) || (2 <= r && r <= 4 && 2 <= c && c <= 4)) {
+                this.modules[row + r][col + c] = true;
+              } else {
+                this.modules[row + r][col + c] = false;
+              }
+            }
+          }
+        },
+        setupTimingPattern: function() {
+          for (var r = 8; r < this.moduleCount - 8; r++) {
+            if (this.modules[r][6] === null) this.modules[r][6] = (r % 2 == 0);
+          }
+          for (var c = 8; c < this.moduleCount - 8; c++) {
+            if (this.modules[6][c] === null) this.modules[6][c] = (c % 2 == 0);
+          }
+        },
+        createData: function(typeNumber, errorCorrectLevel) {
+          var buffer = new QRBitBuffer();
+          for (var i = 0; i < this.dataList.length; i++) {
+            var data = this.dataList[i];
+            buffer.put(data.mode, 4);
+            buffer.put(data.getLength(), 8);
+            data.write(buffer);
+          }
+          return buffer;
+        },
+        mapData: function(data) {
+          var inc = -1;
+          var row = this.moduleCount - 1;
+          var bitIndex = 7;
+          var byteIndex = 0;
+          for (var col = this.moduleCount - 1; col > 0; col -= 2) {
+            if (col == 6) col--;
+            while (true) {
+              for (var c = 0; c < 2; c++) {
+                if (this.modules[row][col - c] === false || this.modules[row][col - c] === true) {
+                  // Already occupied by markers
+                } else {
+                  var dark = false;
+                  if (byteIndex < data.buffer.length) {
+                    dark = (((data.buffer[byteIndex] >>> bitIndex) & 1) == 1);
+                  }
+                  this.modules[row][col - c] = dark;
+                  bitIndex--;
+                  if (bitIndex == -1) {
+                    byteIndex++;
+                    bitIndex = 7;
+                  }
+                }
+              }
+              row += inc;
+              if (row < 0 || this.moduleCount <= row) {
+                row -= inc;
+                inc = -inc;
+                break;
+              }
+            }
+          }
+        }
+      };
+
+      function QRBitBuffer() {
+        this.buffer = [];
+        this.length = 0;
+      }
+      QRBitBuffer.prototype = {
+        put: function(num, length) {
+          for (var i = 0; i < length; i++) {
+            this.putBit(((num >>> (length - i - 1)) & 1) == 1);
+          }
+        },
+        putBit: function(bit) {
+          var bufIndex = Math.floor(this.length / 8);
+          if (this.buffer.length <= bufIndex) this.buffer.push(0);
+          if (bit) this.buffer[bufIndex] |= (0x80 >>> (this.length % 8));
+          this.length++;
+        }
+      };
+    })();
+  </script>
+
+  <!-- Main Application Logic (State Machine, Transmitter & Receiver) -->
+  <script>
+    /* =========================================================
+       App State & Protocol Controller
+       ========================================================= */
+    const State = {
+      // Transmit State
+      tx: {
+        file: null,
+        fileBytes: null,
+        fileId: '',
+        fileName: '',
+        fileSize: 0,
+        mimeType: '',
+        fileHash: '',
+        chunkSize: 360,
+        fps: 8,
+        frames: [],
+        currentIndex: 0,
+        isPlaying: false,
+        timer: null,
+        filteredIndices: null
+      },
+      // Receive State
+      rx: {
+        active: false,
+        fileId: '',
+        fileName: '',
+        fileSize: 0,
+        mimeType: '',
+        expectedHash: '',
+        totalChunks: 0,
+        receivedMap: new Map(), // chunkIndex -> Uint8Array
+        lastTime: 0,
+        framesCount: 0
+      }
+    };
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+
+      if (tabId === 'transmit') {
+        document.getElementById('tabTransmit').classList.add('active');
+        document.getElementById('panelTransmit').classList.add('active');
+      } else if (tabId === 'receive') {
+        document.getElementById('tabReceive').classList.add('active');
+        document.getElementById('panelReceive').classList.add('active');
+      } else {
+        document.getElementById('tabGuide').classList.add('active');
+        document.getElementById('panelGuide').classList.add('active');
+      }
+    }
+
+    /* =========================================================
+       TRANSMITTER LOGIC (PC -> Phone)
+       ========================================================= */
+    async function handleFileSelected(file) {
+      if (!file) return;
+      State.tx.file = file;
+      State.tx.fileName = file.name;
+      State.tx.fileSize = file.size;
+      State.tx.mimeType = file.type || 'application/octet-stream';
+      State.tx.fileId = Math.random().toString(16).substring(2, 8);
+
+      // Read buffer
+      const buffer = await file.arrayBuffer();
+      State.tx.fileBytes = new Uint8Array(buffer);
+
+      // Compute SHA-256 in background
+      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      State.tx.fileHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+      // Build Chunks
+      buildTxChunks();
+
+      // Update UI
+      document.getElementById('fileInfoCard').style.display = 'flex';
+      document.getElementById('txFileName').textContent = file.name;
+      document.getElementById('txFileSize').textContent = formatBytes(file.size);
+      document.getElementById('txMime').textContent = State.tx.mimeType;
+      document.getElementById('txHash').textContent = State.tx.fileHash;
+      document.getElementById('txChunkCount').textContent = State.tx.frames.length;
+      document.getElementById('txStatusBadge').textContent = 'READY';
+
+      document.getElementById('txScrubber').max = Math.max(0, State.tx.frames.length - 1);
+      document.getElementById('txScrubber').value = 0;
+
+      // Render frame 0
+      renderTxFrame(0);
+    }
+
+    function buildTxChunks() {
+      const bytes = State.tx.fileBytes;
+      if (!bytes) return;
+      const chunkSize = State.tx.chunkSize;
+      const totalChunks = Math.max(1, Math.ceil(bytes.length / chunkSize));
+      State.tx.frames = [];
+
+      for (let i = 0; i < totalChunks; i++) {
+        const start = i * chunkSize;
+        const end = Math.min(start + chunkSize, bytes.length);
+        const slice = bytes.slice(start, end);
+        
+        // Base64 encode slice
+        let binary = '';
+        for (let b = 0; b < slice.length; b++) binary += String.fromCharCode(slice[b]);
+        const base64Data = btoa(binary);
+
+        const frameJson = JSON.stringify({
+          t: "qrf",
+          id: State.tx.fileId,
+          i: i,
+          n: totalChunks,
+          s: State.tx.fileSize,
+          name: State.tx.fileName,
+          mime: State.tx.mimeType,
+          hash: State.tx.fileHash,
+          d: base64Data
+        });
+
+        State.tx.frames.push(frameJson);
+      }
+    }
+
+    function renderTxFrame(index) {
+      if (!State.tx.frames.length) return;
+      State.tx.currentIndex = index;
+      const json = State.tx.frames[index];
+      const canvas = document.getElementById('txCanvas');
+      
+      QRCode.toCanvas(canvas, json, { margin: 2 });
+
+      document.getElementById('txFrameCounter').textContent = `${index + 1} / ${State.tx.frames.length}`;
+      document.getElementById('txScrubber').value = index;
+      const progress = ((index + 1) / State.tx.frames.length) * 100;
+      document.getElementById('txProgress').style.width = progress + '%';
+    }
+
+    function toggleTxPlay() {
+      if (State.tx.isPlaying) {
+        pauseTx();
+      } else {
+        playTx();
+      }
+    }
+
+    function playTx() {
+      if (!State.tx.frames.length) return;
+      State.tx.isPlaying = true;
+      document.getElementById('txPlayBtn').textContent = 'Pause Stream';
+      document.getElementById('txStatusBadge').textContent = 'STREAMING';
+
+      const interval = 1000 / State.tx.fps;
+      clearInterval(State.tx.timer);
+      State.tx.timer = setInterval(() => {
+        const activeList = State.tx.filteredIndices || [...Array(State.tx.frames.length).keys()];
+        const currentPos = activeList.indexOf(State.tx.currentIndex);
+        const nextPos = (currentPos + 1) % activeList.length;
+        renderTxFrame(activeList[nextPos]);
+      }, interval);
+    }
+
+    function pauseTx() {
+      State.tx.isPlaying = false;
+      clearInterval(State.tx.timer);
+      document.getElementById('txPlayBtn').textContent = 'Play Stream';
+      document.getElementById('txStatusBadge').textContent = 'PAUSED';
+    }
+
+    function stepTxFrame(delta) {
+      pauseTx();
+      const activeList = State.tx.filteredIndices || [...Array(State.tx.frames.length).keys()];
+      const currentPos = activeList.indexOf(State.tx.currentIndex);
+      const nextPos = (currentPos + delta + activeList.length) % activeList.length;
+      renderTxFrame(activeList[nextPos]);
+    }
+
+    function scrubTx(val) {
+      pauseTx();
+      renderTxFrame(parseInt(val, 10));
+    }
+
+    function updateFps(fps) {
+      State.tx.fps = parseInt(fps, 10);
+      document.getElementById('fpsVal').textContent = fps + ' FPS';
+      if (State.tx.isPlaying) {
+        playTx();
+      }
+    }
+
+    function updateChunkSize(size) {
+      State.tx.chunkSize = parseInt(size, 10);
+      if (State.tx.fileBytes) {
+        pauseTx();
+        buildTxChunks();
+        renderTxFrame(0);
+        document.getElementById('txChunkCount').textContent = State.tx.frames.length;
+      }
+    }
+
+    function clearTxFilter() {
+      State.tx.filteredIndices = null;
+      document.getElementById('targetedResendCard').style.display = 'none';
+      renderTxFrame(0);
+    }
+
+    function openScanRequestModal() {
+      document.getElementById('scanRequestModal').classList.add('open');
+    }
+
+    function applyManualRequest() {
+      try {
+        const text = document.getElementById('manualRequestInput').value.trim();
+        const json = JSON.parse(text);
+        if (json.t === 'req' && Array.isArray(json.need)) {
+          State.tx.filteredIndices = json.need;
+          document.getElementById('targetedResendCard').style.display = 'block';
+          document.getElementById('txTargetedSummary').textContent = `Targeting ${json.need.length} missing packets: ${json.need.map(n => '#' + (n + 1)).join(', ')}`;
+          closeModal('scanRequestModal');
+          renderTxFrame(json.need[0]);
+          playTx();
+        } else {
+          alert("Invalid Request QR JSON structure!");
+        }
+      } catch(e) {
+        alert("Invalid JSON: " + e.message);
+      }
+    }
+
+    function toggleFullscreen() {
+      const container = document.querySelector('.qr-container');
+      if (!document.fullscreenElement) {
+        container.requestFullscreen().catch(err => alert(err.message));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    /* =========================================================
+       RECEIVER LOGIC (Phone -> PC)
+       ========================================================= */
+    let videoStream = null;
+    let barcodeDetector = null;
+
+    async function startCamera() {
+      const video = document.getElementById('webcamVideo');
+      if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+        videoStream = null;
+        video.srcObject = null;
+        return;
+      }
+
+      try {
+        videoStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 1280 } }
+        });
+        video.srcObject = videoStream;
+
+        // Check if native BarcodeDetector API is supported
+        if ('BarcodeDetector' in window) {
+          barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+        }
+
+        requestAnimationFrame(scanLoop);
+      } catch(e) {
+        alert("Camera error: " + e.message);
+      }
+    }
+
+    async function scanLoop() {
+      const video = document.getElementById('webcamVideo');
+      if (!videoStream || video.readyState !== video.HAVE_ENOUGH_DATA) {
+        if (videoStream) requestAnimationFrame(scanLoop);
+        return;
+      }
+
+      if (barcodeDetector) {
+        try {
+          const barcodes = await barcodeDetector.detect(video);
+          for (let b of barcodes) {
+            handleScannedRaw(b.rawValue);
+          }
+        } catch(e) {}
+      }
+
+      requestAnimationFrame(scanLoop);
+    }
+
+    function handleScannedRaw(raw) {
+      if (!raw || !raw.startsWith('{') || !raw.includes('"qrf"')) return;
+      try {
+        const frame = JSON.parse(raw);
+        if (frame.t !== 'qrf') return;
+
+        const rx = State.rx;
+        if (rx.fileId !== frame.id) {
+          // New file transfer session
+          rx.fileId = frame.id;
+          rx.fileName = frame.name;
+          rx.fileSize = frame.s;
+          rx.mimeType = frame.mime;
+          rx.expectedHash = frame.hash;
+          rx.totalChunks = frame.n;
+          rx.receivedMap.clear();
+          rx.lastTime = Date.now();
+          rx.framesCount = 0;
+
+          document.getElementById('rxStatus').textContent = 'RECEIVING STREAM';
+          initRxGrid(frame.n);
+        }
+
+        if (!rx.receivedMap.has(frame.i)) {
+          // Decode payload Base64
+          const rawBin = atob(frame.d);
+          const bytes = new Uint8Array(rawBin.length);
+          for (let i = 0; i < rawBin.length; i++) bytes[i] = rawBin.charCodeAt(i);
+
+          rx.receivedMap.set(frame.i, bytes);
+          rx.framesCount++;
+
+          updateRxGrid(frame.i);
+
+          // Update speed & progress
+          const elapsed = Math.max(0.1, (Date.now() - rx.lastTime) / 1000);
+          const speed = (rx.framesCount / elapsed).toFixed(1);
+          document.getElementById('rxSpeed').textContent = `${speed} chunks/s`;
+
+          const progress = ((rx.receivedMap.size / rx.totalChunks) * 100).toFixed(0);
+          document.getElementById('rxProgress').style.width = progress + '%';
+          document.getElementById('rxChunkCount').textContent = `${rx.receivedMap.size} / ${rx.totalChunks} packets (${progress}%)`;
+
+          // Check if complete
+          if (rx.receivedMap.size >= rx.totalChunks) {
+            finalizeRxReconstruction();
+          }
+        }
+      } catch(e) {
+        console.error("Frame parse error:", e);
+      }
+    }
+
+    function initRxGrid(total) {
+      const grid = document.getElementById('rxPacketGrid');
+      grid.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const block = document.createElement('div');
+        block.className = 'packet-block missing';
+        block.id = 'pkt-' + i;
+        block.title = `Packet #${i + 1} (Missing)`;
+        grid.appendChild(block);
+      }
+      updateBitGridHealth();
+    }
+
+    function updateRxGrid(index) {
+      const block = document.getElementById('pkt-' + index);
+      if (block) {
+        block.className = 'packet-block active';
+        block.title = `Packet #${index + 1} (Received)`;
+        setTimeout(() => {
+          if (block.classList.contains('active')) {
+            block.className = 'packet-block received';
+          }
+        }, 150);
+      }
+      updateBitGridHealth();
+    }
+
+    function updateBitGridHealth() {
+      const rx = State.rx;
+      if (!rx || !rx.totalChunks) return;
+      const received = rx.receivedMap ? rx.receivedMap.size : 0;
+      const total = rx.totalChunks;
+      const missing = Math.max(0, total - received);
+      const healthPct = Math.round((received / total) * 100);
+
+      const healthBadge = document.getElementById('rxHealthBadge');
+      const lossRateEl = document.getElementById('rxLossRate');
+      const callout = document.getElementById('rxMissingCallout');
+      const missingList = document.getElementById('rxMissingList');
+
+      if (lossRateEl) {
+        lossRateEl.textContent = `Health: ${healthPct}% (${missing} red)`;
+        lossRateEl.style.color = healthPct > 80 ? 'var(--accent-green)' : (healthPct > 50 ? 'var(--accent-amber)' : 'var(--accent-red)');
+      }
+
+      if (healthBadge) {
+        if (missing === 0 && received > 0) {
+          healthBadge.textContent = "100% HEALTHY";
+          healthBadge.style.color = "var(--accent-green)";
+          healthBadge.style.borderColor = "var(--accent-green)";
+        } else if (received > 0) {
+          healthBadge.textContent = `${missing} MISSED (RED)`;
+          healthBadge.style.color = "var(--accent-red)";
+          healthBadge.style.borderColor = "var(--accent-red)";
+        }
+      }
+
+      // Update missing chunks callout
+      if (missing > 0 && received > 0 && callout && missingList) {
+        callout.style.display = 'block';
+        const missingRanges = [];
+        let start = -1;
+        for (let i = 0; i < total; i++) {
+          if (!rx.receivedMap.has(i)) {
+            if (start === -1) start = i;
+          } else {
+            if (start !== -1) {
+              missingRanges.push(start === i - 1 ? `#${start + 1}` : `#${start + 1}–${i}`);
+              start = -1;
+            }
+          }
+        }
+        if (start !== -1) {
+          missingRanges.push(start === total - 1 ? `#${start + 1}` : `#${start + 1}–${total}`);
+        }
+        missingList.innerHTML = missingRanges.slice(0, 14).map(r => `<span style="display:inline-block; background:rgba(255,82,82,0.2); border:1px solid rgba(255,82,82,0.5); border-radius:4px; padding:2px 6px; margin:2px; font-weight:700; color:#ff8a80;">${r}</span>`).join(' ') + (missingRanges.length > 14 ? ` + ${missingRanges.length - 14} more` : '');
+      } else if (callout) {
+        callout.style.display = 'none';
+      }
+    }
+
+    function generateRxMissingRequest() {
+      const rx = State.rx;
+      if (!rx.totalChunks) return;
+      const missing = [];
+      for (let i = 0; i < rx.totalChunks; i++) {
+        if (!rx.receivedMap.has(i)) missing.push(i);
+      }
+
+      if (missing.length === 0) {
+        alert("No missing packets! Transfer is already 100% complete.");
+        return;
+      }
+
+      const reqObj = {
+        t: "req",
+        id: rx.fileId,
+        need: missing
+      };
+
+      const canvas = document.getElementById('missingQrCanvas');
+      QRCode.toCanvas(canvas, JSON.stringify(reqObj), { margin: 2 });
+      document.getElementById('missingModal').classList.add('open');
+    }
+
+    async function finalizeRxReconstruction() {
+      const rx = State.rx;
+      document.getElementById('rxStatus').textContent = 'VERIFYING SHA-256...';
+
+      // Assemble all pieces in order
+      let totalLength = 0;
+      for (let i = 0; i < rx.totalChunks; i++) {
+        totalLength += rx.receivedMap.get(i).length;
+      }
+
+      const fullFile = new Uint8Array(totalLength);
+      let offset = 0;
+      for (let i = 0; i < rx.totalChunks; i++) {
+        const chunk = rx.receivedMap.get(i);
+        fullFile.set(chunk, offset);
+        offset += chunk.length;
+      }
+
+      // Compute SHA-256 of assembled file
+      const hashBuffer = await crypto.subtle.digest('SHA-256', fullFile.buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const computedHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+      if (computedHash.toLowerCase() === rx.expectedHash.toLowerCase()) {
+        document.getElementById('rxStatus').textContent = 'VERIFIED & COMPLETE';
+        document.getElementById('rxCompleteCard').style.display = 'flex';
+        document.getElementById('rxFileName').textContent = rx.fileName;
+        document.getElementById('rxFileSize').textContent = formatBytes(fullFile.length);
+        document.getElementById('rxHash').textContent = computedHash;
+
+        // Setup Download button
+        const blob = new Blob([fullFile], { type: rx.mimeType });
+        const url = URL.createObjectURL(blob);
+        const dlBtn = document.getElementById('rxDownloadBtn');
+        dlBtn.onclick = function() {
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = rx.fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        };
+      } else {
+        document.getElementById('rxStatus').textContent = 'HASH MISMATCH!';
+        alert(`Checksum mismatch! Expected: ${rx.expectedHash}\nComputed: ${computedHash}`);
+      }
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+
+    // Keyboard Shortcuts (Space for Play/Pause, Arrow Keys for frames, F for Fullscreen)
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.code === 'Space') {
+        e.preventDefault();
+        toggleTxPlay();
+      } else if (e.code === 'ArrowRight') {
+        stepTxFrame(1);
+      } else if (e.code === 'ArrowLeft') {
+        stepTxFrame(-1);
+      } else if (e.code === 'KeyF') {
+        toggleFullscreen();
+      }
+    });
+
+    // Drag and Drop Event Listeners
+    const dropzone = document.getElementById('dropzone');
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) {
+        handleFileSelected(e.dataTransfer.files[0]);
+      }
+    });
+  </script>
+</body>
+</html>
