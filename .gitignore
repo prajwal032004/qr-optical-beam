@@ -16,3 +16,21 @@
 local.properties
 .env
 debug.keystore
+
+# ---------------------------------------------------------------------------
+# Private source code
+# The app's Kotlin source is not published. People who want the app should
+# install the APK from GitHub Releases. Build scripts (*.kts), resources and
+# the manifest stay public so the project structure is visible.
+# ---------------------------------------------------------------------------
+app/src/**/*.kt
+app/src/**/*.java
+
+# Build outputs and signing material: never commit these
+*.apk
+*.aab
+*.jks
+*.keystore
+/release/
+/app/release/
+/app/build/

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Pure black window: no white flash before Compose draws the animated splash. -->
+    <!-- Android 12+ system splash: plain black, then the animated Compose splash takes over. -->
     <style name="Theme.MyApplication" parent="android:Theme.DeviceDefault.NoActionBar">
         <item name="android:windowBackground">#FF000000</item>
         <item name="android:colorBackground">#FF000000</item>
+        <item name="android:windowSplashScreenBackground">#FF000000</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_blank</item>
     </style>
 </resources>
