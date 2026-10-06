@@ -23,7 +23,7 @@ debug.keystore
 # install the APK from GitHub Releases. Build scripts (*.kts), resources and
 # the manifest stay public so the project structure is visible.
 # ---------------------------------------------------------------------------
-app/src/**/*.kt
+app/src/**/*
 app/src/**/*.java
 
 # Build outputs and signing material: never commit these
