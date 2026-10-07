@@ -11,14 +11,15 @@
 
 [![100% Offline](https://img.shields.io/badge/100%25-Offline-000000?style=for-the-badge&logo=airplayaudio&logoColor=white)](https://github.com/prajwal032004/qr-optical-beam)
 [![SHA-256 Integrity](https://img.shields.io/badge/Integrity-SHA--256-000000?style=for-the-badge&logo=letsencrypt&logoColor=white)](https://github.com/prajwal032004/qr-optical-beam)
+[![Up to 100 MB](https://img.shields.io/badge/Files-up%20to%20100%20MB-000000?style=for-the-badge&logo=files&logoColor=white)](#-limits-and-why)
 [![Android 7.0+](https://img.shields.io/badge/Android-7.0%2B-000000?style=for-the-badge&logo=android&logoColor=white)](https://github.com/prajwal032004/qr-optical-beam)
-[![Version 2.0.0](https://img.shields.io/badge/Version-2.0.0-000000?style=for-the-badge)](https://github.com/prajwal032004/qr-optical-beam/releases/latest)
+[![Version 2.1.0](https://img.shields.io/badge/Version-2.1.0-000000?style=for-the-badge)](https://github.com/prajwal032004/qr-optical-beam/releases/latest)
 [![Made by Prajwal A Bhandagi](https://img.shields.io/badge/Made%20by-Prajwal%20A%20Bhandagi-000000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/prajwal032004)
 
 <br/>
 
-<a href="https://github.com/prajwal032004/qr-optical-beam/releases/download/v2.0.0/AirQR-Beam-v2.0.0.apk">
-  <img src="https://img.shields.io/badge/Download%20APK-AirQR%20Beam%20v2.0.0-FFFFFF?style=for-the-badge&logo=android&logoColor=black&labelColor=000000" alt="Download APK" />
+<a href="https://github.com/prajwal032004/qr-optical-beam/releases/download/v2.1.0/AirQR-Beam-v2.1.0.apk">
+  <img src="https://img.shields.io/badge/Download%20APK-AirQR%20Beam%20v2.1.0-FFFFFF?style=for-the-badge&logo=android&logoColor=black&labelColor=000000" alt="Download APK" />
 </a>
 <a href="https://github.com/prajwal032004/qr-optical-beam/releases/latest">
   <img src="https://img.shields.io/badge/All%20Releases-GitHub-000000?style=for-the-badge&logo=github&logoColor=white" alt="All releases" />
@@ -45,8 +46,7 @@
   </tr>
   <tr>
     <td align="center"><img src="docs/screenshots/09-too-big.png" width="200" alt="File over 100 MB" /><br/><sub><b>Over 100 MB: refused</b></sub></td>
-    <td align="center"><img src="docs/screenshots/10-too-slow.png" width="200" alt="Over 2 minutes" /><br/><sub><b>Over 2 minutes: refused</b></sub></td>
-    <td colspan="2" valign="middle">
+    <td colspan="3" valign="middle">
       <b>Black &amp; white by design.</b><br/>
       QR codes scan best at maximum contrast, so the entire app is pure monochrome black and white—from the launcher icon and splash animation to live QR streams and UI controls.
     </td>
@@ -85,12 +85,13 @@ flowchart LR
 
 ## 📏 Limits (and why)
 
-QR codes over light are slower than RF radios (Wi-Fi), so AirQR keeps every transfer predictable and swift:
+AirQR beams **any file up to 100 MB**. Light is slower than radio (Wi-Fi), so the app shows how long each speed will take before you start:
 
 | Rule | What happens |
 | :--- | :--- |
-| ⏱️ **Must finish within 2 minutes** | The app estimates transfer time before starting and picks the most reliable speed that fits. That is roughly **1 MB** at the fastest speed. |
-| 🚫 **Never over 100 MB** | Refused immediately before reading into memory. |
+| ✅ **Up to 100 MB: allowed** | KB-sized files, 2 MB photos, 50 MB videos: anything at or under 100 MB is beamed. |
+| 🚫 **Over 100 MB: refused** | Refused immediately, before a single byte is read. |
+| ⏱️ **Transfer time** | Roughly **10 KB/s** at Turbo: **1 MB ≈ 2 min**, **10 MB ≈ 20 min**, **100 MB ≈ 3 h 15 min**. For long transfers, prop both phones up and keep them plugged in. |
 | ☁️ **Bigger files?** | The app suggests online apps instead: **Google Drive, WeTransfer, Telegram, or Gmail**. |
 
 ### ⚡ Speeds
@@ -100,7 +101,7 @@ QR codes over light are slower than RF radios (Wi-Fi), so AirQR keeps every tran
 | **Steady** | 8 | Any camera, shaky hands, bright rooms |
 | **Balanced** | 12 | Most phones |
 | **Turbo** | 15 | Both phones held steady, responsive cameras |
-| **Auto** *(default)* | — | Automatically picks the fastest reliable speed that finishes within 2 minutes |
+| **Auto** *(default)* | — | Picks the most reliable speed that finishes within about 2 minutes; bigger files use Turbo |
 
 ---
 
@@ -119,12 +120,12 @@ QR codes over light are slower than RF radios (Wi-Fi), so AirQR keeps every tran
 
 ## 📲 Install
 
-1. Download [**AirQR-Beam-v2.0.0.apk**](https://github.com/prajwal032004/qr-optical-beam/releases/download/v2.0.0/AirQR-Beam-v2.0.0.apk) from the [Releases](https://github.com/prajwal032004/qr-optical-beam/releases) page.
+1. Download [**AirQR-Beam-v2.1.0.apk**](https://github.com/prajwal032004/qr-optical-beam/releases/download/v2.1.0/AirQR-Beam-v2.1.0.apk) from the [Releases](https://github.com/prajwal032004/qr-optical-beam/releases) page.
 2. Open it on your Android phone (Android 7.0 Nougat or newer).
 3. If prompted, grant **Install unknown apps** for your browser or file manager.
 4. Install it on **both** phones, and you are ready to beam.
 
-> 💡 *Note*: If updating from an earlier v1.x release, uninstall the previous version before installing v2.0.0.
+> 💡 *Note*: v2.1.0 installs over v2.0.0 as a normal update. Both phones need v2.1.0, because it uses a new frame format (v3) for large files. If updating from an earlier v1.x release, uninstall it first.
 
 ---
 
@@ -132,7 +133,7 @@ QR codes over light are slower than RF radios (Wi-Fi), so AirQR keeps every tran
 
 ### 📤 Sending (Phone A)
 1. Open **Send** and tap **Choose a file**.
-2. Select your file and choose a speed. Each option calculates its expected transfer time (options > 2 min are disabled).
+2. Select any file up to 100 MB and choose a speed. Each option shows its expected transfer time.
 3. Tap **Start beaming**. The screen maximizes brightness and begins cycling high-density QR frames.
 4. Keep beaming until Phone B confirms completion with a ✓.
 
@@ -148,7 +149,7 @@ QR codes over light are slower than RF radios (Wi-Fi), so AirQR keeps every tran
 
 | Method | Works Without Internet | Zero Radio Signals (RF) | No Pairing / Accounts | Eavesdropping Resistance | Max Practical Size |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **AirQR Beam** | ✅ | ✅ | ✅ | ✅ (Line-of-sight only) | ~1 MB |
+| **AirQR Beam** | ✅ | ✅ | ✅ | ✅ (Line-of-sight only) | 100 MB |
 | **Bluetooth** | ✅ | ❌ | ❌ | ❌ | ~50 MB |
 | **Wi-Fi Direct / Quick Share** | ✅ | ❌ | ⚠️ | ❌ | Gigabytes |
 | **Cloud Storage** | ❌ | ❌ | ❌ | ❌ | Unlimited |
@@ -159,11 +160,12 @@ QR codes over light are slower than RF radios (Wi-Fi), so AirQR keeps every tran
 
 ## 🔬 Under the Hood
 
-- **Compact Frame Encoding**: `"AQ2" + Base45(binary frame + CRC32) + "."`. Base45 leverages the QR code's native alphanumeric mode, achieving ~30% higher data density than Base64.
+- **Compact Frame Encoding**: `"AQ3" + Base45(binary frame + CRC32) + "."`. Base45 leverages the QR code's native alphanumeric mode, achieving ~30% higher data density than Base64.
 - **Dual Frame Architecture**: 
   - `DATA`: Carries raw payload chunks and fountain repair combinations.
   - `META`: Transmits file metadata (filename, MIME type, size, SHA-256). Broadcasts periodically every 10 frames so the receiver can lock on at any instant.
 - **Systematic Fountain Codes**: Repair frames are generated via random linear combinations over $GF(2)$. Seeded pseudo-random generation guarantees synchronized chunk sets between sender and receiver without transmitting chunk indexes.
+- **Blocked Fountains for Large Files**: Chunks are grouped into blocks of 1,024, each with its own fountain, so memory and per-frame work stay small even for a 100 MB file. The sender memory-maps the file, and the receiver writes each solved block straight to storage.
 - **Incremental Gaussian Elimination**: Chunks are resolved on-the-fly over $GF(2)$, allowing each received frame to immediately solve for missing data.
 - **Modern Android Stack**: Built with Kotlin, Jetpack Compose (Material 3), CameraX, ZXing, Google ML Kit Barcode Scanning (offline bundled model), Room Database, and Kotlin Coroutines/StateFlow.
 
@@ -171,7 +173,7 @@ QR codes over light are slower than RF radios (Wi-Fi), so AirQR keeps every tran
 
 ## 🌐 Web Companion
 
-> ⚠️ The legacy browser companion (`app/src/main/assets/web/index.html`) currently uses the v1 protocol and cannot exchange files with v2.0.0 until updated.
+> ⚠️ The legacy browser companion (`app/src/main/assets/web/index.html`) currently uses the v1 protocol and cannot exchange files with v2.x until updated.
 
 ---
 
